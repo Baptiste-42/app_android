@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,19 +42,31 @@ class PokemonListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = view.findViewById(R.id.pokemon_recyclerview)
+
         recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = this@PokemonListFragment.adapter
         }
+        
+        val list = getListFromCache()
+        if(list.isEmpty()){
+            callApi()
+        } else{
 
+        }
 
+    }
 
+    private fun getListFromCache(): List<Pokemon> {
+        //TODO
+    }
 
-        Singletons.pokeApi.getPokemonList().enqueue(object: Callback<PokemonListResponse>{
+    private fun callApi() {
+        Singletons.pokeApi.getPokemonList().enqueue(object : Callback<PokemonListResponse> {
             override fun onResponse(call: Call<PokemonListResponse>, response: Response<PokemonListResponse>) {
-                if(response.isSuccessful && response.body() != null){
-                    val pokemonResponse  = response.body()!!
-                    adapter.updateList(pokemonResponse.results)  //pour afficher la liste
+                if (response.isSuccessful && response.body() != null) {
+                    val pokemonResponse = response.body()!!
+                    showList(pokemonResponse)
                 }
             }
 
@@ -62,12 +75,15 @@ class PokemonListFragment : Fragment() {
             }
 
         })
-
-
     }
 
-    private fun onClickedPokemon(pokemon: Pokemon) {
-        findNavController().navigate(R.id.navigateToPokemonDetailFragment)
+    private fun showList()
+
+    private fun onClickedPokemon(id: Int) {
+        findNavController().navigate(R.id.navigateToPokemonDetailFragment, bundleOf(
+                "pokemonId" to (id + 1)
+                //"..." to ...
+        ))
     }
 
 }

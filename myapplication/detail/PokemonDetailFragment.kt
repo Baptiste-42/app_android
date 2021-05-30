@@ -8,13 +8,18 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.myapplication.R
 import com.example.myapplication.Singletons
 import com.example.myapplication.api.PokemonDetailResponse
 import com.example.myapplication.api.PokemonListResponse
 import retrofit2.Call
 import retrofit2.Response
-import javax.security.auth.callback.Callback
+import retrofit2.http.GET
+import retrofit2.http.Path
+import javax.security.auth.callback.CallbackHandler
+import retrofit2.Callback
+
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -40,8 +45,9 @@ class PokemonDetailFragment : Fragment() {
     }
 
     private fun callApi() {
+        val id = arguments?.getInt("PokemonId") ?: -1
 
-        Singletons.pokeApi.getPokemonDetail("1").enqueue(object : retrofit2.Callback<PokemonDetailResponse>{
+        Singletons.pokeApi.getPokemonDetail(id).enqueue(object : Callback<PokemonDetailResponse> {
             override fun onFailure(
                     call: Call<PokemonDetailResponse>,
                     t: Throwable
@@ -54,6 +60,7 @@ class PokemonDetailFragment : Fragment() {
             ) {
                 if(response.isSuccessful && response.body() != null) {
                     textViewName.text = response.body()!!.name
+
                 }
             }
 
@@ -61,6 +68,5 @@ class PokemonDetailFragment : Fragment() {
     }
 
 }
-
 
 
